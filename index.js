@@ -1,5 +1,3 @@
-// require("dotenv").config();
-
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -31,7 +29,19 @@ let verify = async (token) => {
 
 app.post("/login", async (req, res) => {
   let [_, token] = req.headers.authorization.split(" ");
-  let email = await verify(token).catch(console.error);
+  if (!token) {
+    res.status(404).json({
+      error: `Token is empty or not using Bearer format`,
+    });
+  }
+
+  let email = await verify(token);
+
+  if (!email) {
+    res.status(404).json({
+      error: `Email is ${email}`,
+    });
+  }
 
   // check email query
   const checkEmail = await pool.query(
@@ -57,7 +67,19 @@ app.post("/login", async (req, res) => {
 
 app.post("/sync", async (req, res) => {
   let [_, token] = req.headers.authorization.split(" ");
-  let email = await verify(token).catch(console.error);
+  if (!token) {
+    res.status(404).json({
+      error: `Token is empty or not using Bearer format`,
+    });
+  }
+
+  let email = await verify(token);
+
+  if (!email) {
+    res.status(404).json({
+      error: `Email is ${email}`,
+    });
+  }
 
   let { data } = req.body;
 
