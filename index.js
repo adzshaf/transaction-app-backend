@@ -1,6 +1,9 @@
 const express = require("express");
+const { httpLogger } = require("./middlewares");
+const { logger } = require("./utils");
 const app = express();
 app.use(express.json());
+app.use(httpLogger);
 
 const port = 3000;
 const { OAuth2Client } = require("google-auth-library");
@@ -19,18 +22,23 @@ const pool = new Pool({
 });
 
 let verify = async (token) => {
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.CLIENT_ID,
-  });
-  const payload = ticket.getPayload();
-  return payload["email"];
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    return payload["email"];
+  } catch (err) {
+    logger.error(err);
+    return undefined;
+  }
 };
 
 app.post("/login", async (req, res) => {
   let [_, token] = req.headers.authorization.split(" ");
   if (!token) {
-    res.status(404).json({
+    return res.status(404).json({
       error: `Token is empty or not using Bearer format`,
     });
   }
@@ -38,7 +46,7 @@ app.post("/login", async (req, res) => {
   let email = await verify(token);
 
   if (!email) {
-    res.status(404).json({
+    return res.status(404).json({
       error: `Email is ${email}`,
     });
   }
@@ -62,13 +70,13 @@ app.post("/login", async (req, res) => {
     [email]
   );
 
-  res.json({ email, data: fetchData.rows });
+  return res.json({ email, data: fetchData.rows });
 });
 
 app.post("/sync", async (req, res) => {
   let [_, token] = req.headers.authorization.split(" ");
   if (!token) {
-    res.status(404).json({
+    return res.status(404).json({
       error: `Token is empty or not using Bearer format`,
     });
   }
@@ -76,7 +84,7 @@ app.post("/sync", async (req, res) => {
   let email = await verify(token);
 
   if (!email) {
-    res.status(404).json({
+    return res.status(404).json({
       error: `Email is ${email}`,
     });
   }
@@ -125,7 +133,7 @@ app.post("/sync", async (req, res) => {
     [email]
   );
 
-  res.json({ data: getAllEventResponse.rows });
+  return res.json({ data: getAllEventResponse.rows });
 });
 
 app.listen(port, () => {
