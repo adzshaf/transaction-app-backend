@@ -82,12 +82,12 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/sync', async (req, res) => {
-  // let [_, token] = req.headers.authorization.split(' ');
-  // if (!token) {
-  //   return res.status(404).json({
-  //     error: `Token is empty or not using Bearer format`
-  //   });
-  // }
+  let [_, token] = req.headers.authorization.split(' ');
+  if (!token) {
+    return res.status(404).json({
+      error: `Token is empty or not using Bearer format`
+    });
+  }
 
   // let email = await verify(token);
   let email = "adz.arsym@gmail.com"
