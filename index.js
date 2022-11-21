@@ -82,6 +82,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/sync', async (req, res) => {
+  logger.info("test")
   let [_, token] = req.headers.authorization.split(' ');
   if (!token) {
     return res.status(404).json({
@@ -91,12 +92,15 @@ app.post('/sync', async (req, res) => {
 
   // let email = await verify(token);
   let email = "adz.arsym@gmail.com"
+  logger.info(email)
 
   if (!email) {
     return res.status(404).json({
       error: `Email is ${email}`
     });
   }
+
+  logger.info("HOYYY")
 
   let {data} = req.body;
 
