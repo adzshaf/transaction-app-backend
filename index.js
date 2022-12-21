@@ -51,6 +51,7 @@ app.post('/login', async (req, res) => {
   }
 
   let email = await verify(token);
+  console.log("HM", email)
 
   if (!email) {
     return res.status(404).json({
