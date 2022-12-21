@@ -43,7 +43,6 @@ let verify = async token => {
 };
 
 app.post('/login', async (req, res) => {
-  console.log("CUK")
   let [_, token] = req.headers.authorization.split(' ');
   if (!token) {
     return res.status(404).json({
