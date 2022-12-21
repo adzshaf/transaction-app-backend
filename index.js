@@ -4,7 +4,6 @@ if (environment !== 'production') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
-// require('dotenv').config();
 const express = require('express');
 const {httpLogger} = require('./middlewares');
 const {logger} = require('./utils');
@@ -44,6 +43,7 @@ let verify = async token => {
 };
 
 app.post('/login', async (req, res) => {
+  console.log("CUK")
   let [_, token] = req.headers.authorization.split(' ');
   if (!token) {
     return res.status(404).json({
@@ -89,8 +89,7 @@ app.post('/sync', async (req, res) => {
     });
   }
 
-  // let email = await verify(token);
-  let email = "adz.arsym@gmail.com"
+  let email = await verify(token);
 
   if (!email) {
     return res.status(404).json({
@@ -101,18 +100,6 @@ app.post('/sync', async (req, res) => {
   let {data} = req.body;
 
   if (data.length != 0) {
-    // data.map(value => {
-    //   let {ts, count, node} = HLC.fromString(value.hlc);
-    //   let remoteHlc = new HLC(ts, node, count);
-    //   let syncHlc = clock.receive(
-    //     remoteHlc,
-    //     Math.round(new Date().getTime() / 1000)
-    //   );
-    //   value.hlc = new HLC(syncHlc.ts, syncHlc.node, syncHlc.count);
-    // });
-
-    // data.sort((a, b) => a.hlc.compare(b.hlc));
-
     let serverTime = Math.round(new Date().getTime() / 1000);
 
     data.map(value => {
